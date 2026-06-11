@@ -296,7 +296,7 @@ router.get('/chat-ui', (req, res) => {
   </div>
   <div id="inputArea">
     <input id="inputBox" type="text" placeholder="Contoh: cek anomali tanggal 4 Juni..." />
-    <button id="sendBtn" onclick="kirim()">Kirim</button>
+    <button id="sendBtn">Kirim</button>
   </div>
   <script>
     const API_BASE = window.location.origin;
