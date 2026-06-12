@@ -300,6 +300,7 @@ router.get('/chat-ui', (req, res) => {
   </div>
   <script>
     const API_BASE = window.location.origin;
+    document.getElementById('sendBtn').addEventListener('click', kirim);
     document.getElementById('inputBox').addEventListener('keydown', e => {
       if (e.key === 'Enter') kirim();
     });
@@ -341,5 +342,61 @@ router.get('/chat-ui', (req, res) => {
   </script>
 </body>
 </html>`);
+});
+// ========================================================
+// ENDPOINT UNTUK MENERIMA DATA DARI HARDWARE ATAU SCRIPT DUMMY
+// ========================================================
+router.post('/data', async (req, res) => {
+  try {
+    const { 
+      device_id, 
+      voltage_v, 
+      current_a, 
+      frequency_hz, 
+      power_w, 
+      power_va, 
+      power_var, 
+      power_factor, 
+      thd_voltage, 
+      thd_current, 
+      energy_kwh 
+    } = req.body;
+
+    // Validasi minimal: device_id dan voltage_v wajib ada
+    if (!device_id || voltage_v === undefined) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'device_id dan voltage_v wajib diisi' 
+      });
+    }
+
+    const conn = await getDB();
+    
+    await conn.execute(
+      `INSERT INTO sensor_readings 
+       (device_id, voltage_v, current_a, frequency_hz, power_w, power_va, power_var, power_factor, thd_voltage, thd_current, energy_kwh, recorded_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        device_id, 
+        voltage_v, 
+        current_a || 0, 
+        frequency_hz || 0, 
+        power_w || 0, 
+        power_va || 0, 
+        power_var || 0, 
+        power_factor || 0, 
+        thd_voltage || 0, 
+        thd_current || 0, 
+        energy_kwh || 0
+      ]
+    );
+    
+    await conn.end();
+    
+    res.json({ success: true, message: 'Data berhasil disimpan' });
+  } catch (error) {
+    console.error('Error di /api/data:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 module.exports = router;
