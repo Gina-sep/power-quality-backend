@@ -399,4 +399,88 @@ router.post('/data', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+// ========================================================
+// ENDPOINT UNTUK MENERIMA DATA 3 FASA DARI HARDWARE
+// ========================================================
+router.post('/readings', async (req, res) => {
+  try {
+    const {
+      device_code,
+      koneksi, VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
+      IR, IS, IT, IN, UNBALANCE_I,
+      PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
+      FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
+      suhu_transformator, status,
+      THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT
+    } = req.body;
+
+    // Validasi wajib
+    if (!device_code) {
+      return res.status(400).json({ 
+        status: 'error', 
+        message: 'device_code wajib dikirim!' 
+      });
+    }
+
+    const conn = await getDB();
+
+    // Cari device_id dari device_code
+    const [device] = await conn.execute(
+      'SELECT id FROM devices WHERE device_code = ?', 
+      [device_code]
+    );
+
+    if (device.length === 0) {
+      await conn.end();
+      return res.status(404).json({ 
+        status: 'error', 
+        message: `Device ${device_code} tidak ditemukan!` 
+      });
+    }
+
+    const device_id = device[0].id;
+
+    // Simpan ke tabel power_quality_3phase
+    await conn.execute(`
+      INSERT INTO power_quality_3phase 
+      (device_code, recorded_at, 
+       VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
+       IR, IS, IT, IN, UNBALANCE_I,
+       PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
+       FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
+       suhu_transformator, status,
+       THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT)
+      VALUES (?, NOW(), 
+       ?, ?, ?, ?, ?, ?, ?,
+       ?, ?, ?, ?, ?,
+       ?, ?, ?, ?, ?,
+       ?, ?, ?, ?,
+       ?, ?,
+       ?, ?, ?, ?, ?, ?)
+    `, [
+      device_code,
+      VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
+      IR, IS, IT, IN, UNBALANCE_I,
+      PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
+      FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
+      suhu_transformator, status,
+      THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT
+    ]);
+
+    await conn.end();
+
+    res.json({ 
+      status: 'success', 
+      message: 'Data 3 fasa berhasil disimpan!',
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error("Error di /api/readings:", error.message);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Gagal menyimpan data: ' + error.message 
+    });
+  }
+});
 module.exports = router;
