@@ -442,30 +442,31 @@ router.post('/readings', async (req, res) => {
 
     // Simpan ke tabel power_quality_3phase
     await conn.execute(`
-      INSERT INTO power_quality_3phase 
-      (device_code, recorded_at, 
-       VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
-       IR, IS, IT, IN, UNBALANCE_I,
-       PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
-       FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
-       suhu_transformator, status,
-       THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT)
-      VALUES (?, NOW(), 
-       ?, ?, ?, ?, ?, ?, ?,
-       ?, ?, ?, ?, ?,
-       ?, ?, ?, ?, ?,
-       ?, ?, ?, ?,
-       ?, ?,
-       ?, ?, ?, ?, ?, ?)
-    `, [
-      device_code,
-      VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
-      IR, IS, IT, IN, UNBALANCE_I,
-      PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
-      FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
-      suhu_transformator, status,
-      THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT
-    ]);
+  INSERT INTO \`power_quality_3phase\` (
+    \`device_code\`, \`recorded_at\`,
+    \`VRS\`, \`VST\`, \`VTR\`, \`VRN\`, \`VSN\`, \`VTN\`, \`UNBALANCE_V\`,
+    \`IR\`, \`IS\`, \`IT\`, \`IN\`, \`UNBALANCE_I\`,
+    \`PF_R\`, \`PF_S\`, \`PF_T\`, \`DAYA_AKTIF_TOTAL\`, \`DAYA_SEMU_TOTAL\`,
+    \`FREKWENSI\`, \`ENERGY\`, \`IN_TERHADAP_BEBAN\`, \`SIGNAL_WIFI_DEVICE\`,
+    \`suhu_transformator\`, \`status\`,
+    \`THD_VR\`, \`THD_VS\`, \`THD_VT\`, \`THD_IR\`, \`THD_IS\`, \`THD_IT\`
+  )
+  VALUES (?, NOW(),
+    ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?,
+    ?, ?,
+    ?, ?, ?, ?, ?, ?)
+`, [
+  device_code,
+  VRS, VST, VTR, VRN, VSN, VTN, UNBALANCE_V,
+  IR, IS, IT, IN, UNBALANCE_I,
+  PF_R, PF_S, PF_T, DAYA_AKTIF_TOTAL, DAYA_SEMU_TOTAL,
+  FREKWENSI, ENERGY, IN_TERHADAP_BEBAN, SIGNAL_WIFI_DEVICE,
+  suhu_transformator, status,
+  THD_VR, THD_VS, THD_VT, THD_IR, THD_IS, THD_IT
+]);
 
     await conn.end();
 
