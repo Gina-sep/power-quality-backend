@@ -55,7 +55,7 @@ Jawab secara ringkas, solutif, berbasis data di atas. Jika ditanya prediksi, gun
     // Panggil Gemini menggunakan Axios (Pastikan library axios sudah terinstall, atau pakai fetch bawaan lu)
     const fetch = (await import('node-fetch')).default;
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
