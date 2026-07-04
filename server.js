@@ -18,9 +18,6 @@ const server = app.listen(PORT, () => {
     console.log(`Backend jalan di port ${PORT}`);
 });
 
-// Jalur Chat Gemini Interaktif nempel langsung di port ini
-app.post('/api/chat', geminiRoutes);
-
 // Fungsi Auto Analisis bawaan lu tetep aman di bawah sini
 setInterval(async () => {
     try {
